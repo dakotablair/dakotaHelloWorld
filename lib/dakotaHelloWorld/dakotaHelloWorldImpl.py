@@ -51,6 +51,7 @@ class dakotaHelloWorld:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_dakotaHelloWorld
+        print ("Input parameter", params['parameter_1'])
         report = KBaseReport(self.callback_url)
         report_info = report.create({'report': {'objects_created':[],
                                                 'text_message': params['parameter_1']},

@@ -2,7 +2,7 @@ module-name:
     dakotaHelloWorld
 
 module-description:
-    A KBase module
+    A KBase hello world module
 
 service-language:
     python

@@ -63,5 +63,27 @@ class dakotaHelloWorldTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        ret = self.serviceImpl.run_dakotaHelloWorld(self.ctx, {'workspace_name': self.wsName,
-                                                             'parameter_1': 'Hello World!'})
+        ret = self.serviceImpl.run_dakotaHelloWorld(self.ctx, {
+            'workspace_name': self.wsName,
+            'parameter_1': 'Hello World!'
+        })
+        print('report_name', ret[0]['report_name'])
+
+    def test_workspace_service(self):
+        from pprint import pprint
+        client = self.wsClient
+        print(':'*71)
+        workspaces = client.list_workspace_info(dict(
+            owners=['dakota']
+        ))
+        print('workspace info')
+        wmetas = [(user, name, wid) for [wid, name, user, *rest] in workspaces]
+        for (user, name, wid) in wmetas:
+            print('workspace name', name)
+            objects = client.list_objects(dict(
+                workspaces=[name],
+                type='KBaseNarrative.Narrative-4.0',
+            ))
+            if(len(objects)):
+                pprint(objects)
+        print(':'*71)
