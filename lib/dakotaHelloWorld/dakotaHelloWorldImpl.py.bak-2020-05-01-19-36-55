@@ -23,8 +23,8 @@ class dakotaHelloWorld:
     # the latter method is running.
     ######################################### noqa
     VERSION = "0.0.1"
-    GIT_URL = "git@github.com:dakotablair/dakotaHelloWorld.git"
-    GIT_COMMIT_HASH = "bbef6f277e8c9127e076c2e5346564ad05ca76ac"
+    GIT_URL = ""
+    GIT_COMMIT_HASH = ""
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
