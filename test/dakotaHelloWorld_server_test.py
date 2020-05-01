@@ -3,11 +3,13 @@ import os
 import time
 import unittest
 from configparser import ConfigParser
+from pprint import pformat as pprint
 
 from dakotaHelloWorld.dakotaHelloWorldImpl import dakotaHelloWorld
 from dakotaHelloWorld.dakotaHelloWorldServer import MethodContext
 from dakotaHelloWorld.authclient import KBaseAuth as _KBaseAuth
 
+from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.WorkspaceClient import Workspace
 
 
@@ -42,6 +44,7 @@ class dakotaHelloWorldTest(unittest.TestCase):
         cls.serviceImpl = dakotaHelloWorld(cls.cfg)
         cls.scratch = cls.cfg['scratch']
         cls.callback_url = os.environ['SDK_CALLBACK_URL']
+        cls.dfu = DataFileUtil(cls.callback_url, token=token)
         suffix = int(time.time() * 1000)
         cls.wsName = "test_ContigFilter_" + str(suffix)
         ret = cls.wsClient.create_workspace({'workspace': cls.wsName})  # noqa
@@ -69,8 +72,22 @@ class dakotaHelloWorldTest(unittest.TestCase):
         })
         print('report_name', ret[0]['report_name'])
 
+    def get_workspaces_with_objects_by_owner(self, owner):
+        client = self.wsClient
+        workspaces = client.list_workspace_info(dict(
+            owners=[owner]
+        ))
+        wmetas = [(user, name, wid) for [wid, name, user, *rest] in workspaces]
+        out = {}
+        for (user, name, wid) in wmetas:
+            objects = client.list_objects(dict(
+                workspaces=[name],
+            ))
+            if(len(objects)):
+                out[wid] = objects
+        return out
+
     def test_workspace_service(self):
-        from pprint import pprint
         client = self.wsClient
         print(':'*71)
         workspaces = client.list_workspace_info(dict(
@@ -85,5 +102,12 @@ class dakotaHelloWorldTest(unittest.TestCase):
                 type='KBaseNarrative.Narrative-4.0',
             ))
             if(len(objects)):
-                pprint(objects)
+                print(pprint(objects))
         print(':'*71)
+
+    def test_dfu_module(self):
+        dws = self.get_workspaces_with_objects_by_owner('dakota')
+        print(f'''dakota's workspaces: {pprint(dws)}''')
+        ws0 = list(dws.keys())[0]
+        some_obj = self.dfu.get_objects({"object_refs": [f'{ws0}/7/1']})
+        print(f'''some object: {pprint(some_obj)}''')
